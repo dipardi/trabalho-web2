@@ -1,38 +1,108 @@
 <!DOCTYPE html>
-<html>
-	<head>
-	</head>
-	<body>
-		<h2>Inserir Novo Curso</h2>
-		
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Adicionar Curso</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: #f8f9fa; }
+        header { background-color: #343a40; color: white; padding: 20px 40px; }
+        header h1 { margin: 0; }
+        nav { background-color: #fff; border-bottom: 1px solid #dee2e6; padding: 0 40px; }
+        nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; align-items: center; height: 60px; }
+        nav ul li { margin-right: 25px; }
+        nav a { text-decoration: none; color: #495057; font-weight: 500; font-size: 16px; }
+        nav a:hover { color: #007bff; }
+        .admin-dropdown { margin-left: auto; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; }
+        .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
+        .dropdown-content a:hover { background-color: #f1f1f1; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropbtn { background-color: #007bff; color: white; padding: 8px 16px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 40px; background-color: #fff; margin-top: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-top: 0; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .form-button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+    <header><h1>Plataforma de Cursos</h1></header>
+
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li th:each="cat : ${categorias}"><a th:href="@{/curso/categoria/{id}(id=${cat.id})}" th:text="${cat.nome}"></a></li>
+            <li class="admin-dropdown dropdown">
+                <button class="dropbtn">Gerenciar</button>
+                <div class="dropdown-content">
+                    <a th:href="@{/professor/listar}">Professores</a>
+                    <a th:href="@{/categoria/listar}">Categorias</a>
+                    <a th:href="@{/curso/listar}">Cursos</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>Adicionar Novo Curso</h2>
 		<p style="color:red" th:text="${erro}"></p>
 		
 		<form method="post" th:action="@{/curso/inserir}" enctype="multipart/form-data">
-			Nome:<input type="text" name="nome"/> <br />
-			Descrição:<textarea name="descricao"></textarea> <br />
-			Data de Início: <input type="date" name="dataInicio"/> <br />
-			Data Final: <input type="date" name="dataFinal"/> <br />
-			Professor:
-			<select name="professor_id">
-				<option value="">Selecione um professor</option>
-				<option th:each="professor : ${professores}"
-						th:value="${professor.id}"
-						th:text="${professor.nome}">
-				</option>
-			</select> <br />
-			
-			Categoria:
-			<select name="categoria_id">
-				<option value="">Selecione uma categoria</option>
-				<option th:each="cat : ${categorias}"
-						th:value="${cat.id}"
-						th:text="${cat.nome}">
-				</option>
-			</select> <br />
+			<div class="form-group">
+                <label for="nome">Nome do Curso:</label>
+                <input type="text" name="nome" id="nome"/>
+            </div>
 
-			Imagem: <input type="file" name="file" /> <br />
+			<div class="form-group">
+                <label for="descricao">Descrição:</label>
+                <textarea name="descricao" id="descricao" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="dataInicio">Data de Início:</label>
+                <input type="date" name="dataInicio" id="dataInicio"/>
+            </div>
+
+            <div class="form-group">
+                <label for="dataFinal">Data Final:</label>
+                <input type="date" name="dataFinal" id="dataFinal"/>
+            </div>
+
+			<div class="form-group">
+                <label for="professor_id">Professor:</label>
+                <select name="professor_id" id="professor_id">
+                    <option value="">Selecione um professor</option>
+                    <option th:each="professor : ${professores}"
+                            th:value="${professor.id}"
+                            th:text="${professor.nome}">
+                    </option>
+                </select>
+            </div>
 			
-			<button type="submit">Enviar</button>	
+			<div class="form-group">
+                <label for="categoria_id">Categoria:</label>
+                <select name="categoria_id" id="categoria_id">
+                    <option value="">Selecione uma categoria</option>
+                    <option th:each="cat : ${categorias}"
+                            th:value="${cat.id}"
+                            th:text="${cat.nome}">
+                    </option>
+                </select>
+            </div>
+
+			<div class="form-group">
+                <label for="file">Imagem:</label>
+                <input type="file" name="file" id="file" />
+            </div>
+			
+			<button type="submit" class="form-button">Enviar</button>	
 		</form>
-	</body>
+	</div>
+
+</body>
 </html>

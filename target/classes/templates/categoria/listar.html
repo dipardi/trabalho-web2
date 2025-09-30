@@ -1,29 +1,81 @@
 <!DOCTYPE html>
-<html xlms:th="http://www.thymeleaf.org">
-<head></head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gerenciar Categorias</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: #f8f9fa; }
+        header { background-color: #343a40; color: white; padding: 20px 40px; }
+        header h1 { margin: 0; }
+        nav { background-color: #fff; border-bottom: 1px solid #dee2e6; padding: 0 40px; }
+        nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; align-items: center; height: 60px; }
+        nav ul li { margin-right: 25px; }
+        nav a { text-decoration: none; color: #495057; font-weight: 500; font-size: 16px; }
+        nav a:hover { color: #007bff; }
+        .admin-dropdown { margin-left: auto; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; }
+        .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
+        .dropdown-content a:hover { background-color: #f1f1f1; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropbtn { background-color: #007bff; color: white; padding: 8px 16px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px; background-color: #fff; margin-top: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #dee2e6; }
+        thead { background-color: #e9ecef; }
+        .actions a { margin-right: 10px; color: #007bff; text-decoration: none; }
+        .actions a.delete { color: #dc3545; }
+        .add-button { display: inline-block; margin-top: 20px; background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
 <body>
-<th:block th:include="categoria/msg"></th:block>
 
-<form method="post">
-	Busca: <input type="text" name="busca" />
-	<button type="submit">Enviar</button>
-</form>
-	<table border="1">
-		<thead>
-			<th>ID</th>
-			<th>Nome</th>
-		</thead>
-		<tbody>
-    <tr th:each="Categoria: ${categorias}">
-        <td th:text="${Categoria.id}"></td>
-        <td th:text="${Categoria.nome}"></td>
+    <header><h1>Plataforma de Cursos</h1></header>
 
-        <td><a th:href="@{/categoria/editar/{id}(id=${Categoria.id})}">Editar</a></td>
-        <td><a th:href="@{/categoria/excluir/{id}(id=${Categoria.id})}">Excluir</a></td>
-    </tr>
-		</tbody>
-	</table>
-			<a href="/categoria/inserir">Adicionar Novo Curso</a>
-			<a href="/">Voltar para a Página Inicial</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li th:each="cat : ${categorias}"><a th:href="@{/curso/categoria/{id}(id=${cat.id})}" th:text="${cat.nome}"></a></li>
+            <li class="admin-dropdown dropdown">
+                <button class="dropbtn">Gerenciar</button>
+                <div class="dropdown-content">
+                    <a th:href="@{/professor/listar}">Professores</a>
+                    <a th:href="@{/categoria/listar}">Categorias</a>
+                    <a th:href="@{/curso/listar}">Cursos</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>Gerenciar Categorias</h2>
+        <form method="post">
+            Busca: <input type="text" name="busca" />
+            <button type="submit">Enviar</button>
+        </form>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat : ${categorias}">
+                    <td th:text="${cat.id}"></td>
+                    <td th:text="${cat.nome}"></td>
+                    <td class="actions">
+                        <a th:href="@{/categoria/editar/{id}(id=${cat.id})}">Editar</a>
+                        <a th:href="@{/categoria/excluir/{id}(id=${cat.id})}" class="delete">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/categoria/inserir" class="add-button">Adicionar Nova Categoria</a>
+    </div>
+
 </body>
 </html>

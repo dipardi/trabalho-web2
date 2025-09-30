@@ -41,9 +41,9 @@ public class CursoController {
     @GetMapping("/inserir")
     public ModelAndView inserir() {
         ModelAndView mv = new ModelAndView("curso/inserir");
-        mv.addObject("curso", new Curso()); // Envia um objeto Curso vazio para o formulário
-        mv.addObject("professores", professorRepository.findAll()); // Envia a lista de professores
-        mv.addObject("categorias", categoriaRepository.findAll()); // Envia a lista de categorias
+        mv.addObject("curso", new Curso());
+        mv.addObject("professores", professorRepository.findAll());
+        mv.addObject("categorias", categoriaRepository.findAll());
         return mv;
     }
 
@@ -53,28 +53,23 @@ public class CursoController {
 
         if (result.hasErrors()) {
             msg.addFlashAttribute("erro", "Erro ao inserir! Verifique os campos obrigatórios.");
-            // Redireciona de volta para o formulário de inserção para mostrar os erros
             return "redirect:/curso/inserir";
         }
 
         Curso curso = new Curso();
         BeanUtils.copyProperties(dto, curso);
 
-        // Busca o professor e a categoria no banco de dados pelos IDs recebidos do DTO
         Optional<Professor> professorOpt = professorRepository.findById(dto.professor_id());
         Optional<Categoria> categoriaOpt = categoriaRepository.findById(dto.categoria_id());
 
-        // Verifica se o professor ou a categoria foram encontrados
         if (professorOpt.isEmpty() || categoriaOpt.isEmpty()) {
             msg.addFlashAttribute("erro", "Professor ou Categoria inválida.");
             return "redirect:/curso/inserir";
         }
 
-        // Associa o professor e a categoria ao curso
         curso.setProfessor(professorOpt.get());
         curso.setCategoria(categoriaOpt.get());
 
-        // Lógica para salvar a imagem
         try {
             if (!imagem.isEmpty()) {
                 byte[] bytes = imagem.getBytes();
@@ -105,6 +100,39 @@ public class CursoController {
         mv.addObject("cursos", cursoRepository.findByNomeContainingIgnoreCase(busca));
         return mv;
     }
+    
+    // --- NOVOS MÉTODOS ADICIONADOS AQUI ---
+
+    /**
+     * Lista os cursos que pertencem a uma categoria específica.
+     */
+    @GetMapping("/categoria/{id}")
+    public ModelAndView listarPorCategoria(@PathVariable("id") int id) {
+        ModelAndView mv = new ModelAndView("curso/listar"); // Reutiliza a página de listagem
+        List<Curso> cursos = cursoRepository.findByCategoriaId(id);
+        mv.addObject("cursos", cursos);
+        // Adiciona a lista de categorias para o menu da home ser exibido
+        mv.addObject("categorias", categoriaRepository.findAll());
+        return mv;
+    }
+
+    /**
+     * Mostra a página com todos os detalhes de um único curso.
+     */
+    @GetMapping("/detalhes/{id}")
+    public ModelAndView detalharCurso(@PathVariable("id") int id) {
+        ModelAndView mv = new ModelAndView("curso/detalhes");
+        Optional<Curso> cursoOpt = cursoRepository.findById(id);
+        if (cursoOpt.isPresent()) {
+            mv.addObject("curso", cursoOpt.get());
+        } else {
+            // Se não encontrar o curso, redireciona para a home
+            return new ModelAndView("redirect:/");
+        }
+        return mv;
+    }
+    
+    // --- FIM DOS NOVOS MÉTODOS ---
 
     @GetMapping("/editar/{id}")
     public ModelAndView editar(@PathVariable("id") int id) {
@@ -116,7 +144,7 @@ public class CursoController {
             mv.addObject("professores", professorRepository.findAll());
             mv.addObject("categorias", categoriaRepository.findAll());
         } else {
-             mv.setViewName("redirect:/curso/listar"); // Se não encontrar o curso, redireciona para a lista
+             mv.setViewName("redirect:/curso/listar");
         }
         return mv;
     }
@@ -165,10 +193,10 @@ public class CursoController {
         }
         return "redirect:/curso/listar";
     }
-     @GetMapping("/imagem/{imagem}")
+
+    @GetMapping("/imagem/{imagem}")
     @ResponseBody
     public byte[] mostraImagem(@PathVariable("imagem") String imagem) throws IOException {
-        // Este caminho deve ser o mesmo usado no método de inserir/salvar a imagem
         File nomeArquivo = new File("./src/main/resources/static/img/" + imagem);
         if (imagem != null && imagem.trim().length() > 0) {
             return Files.readAllBytes(nomeArquivo.toPath());
