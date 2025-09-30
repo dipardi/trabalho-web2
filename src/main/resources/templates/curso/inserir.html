@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+		<h2>Inserir Novo Curso</h2>
+		
+		<p style="color:red" th:text="${erro}"></p>
+		
+		<form method="post" th:action="@{/curso/inserir}" enctype="multipart/form-data">
+			Nome:<input type="text" name="nome"/> <br />
+			Descrição:<textarea name="descricao"></textarea> <br />
+			Data de Início: <input type="date" name="dataInicio"/> <br />
+			Data Final: <input type="date" name="dataFinal"/> <br />
+			Professor:
+			<select name="professor_id">
+				<option value="">Selecione um professor</option>
+				<option th:each="professor : ${professores}"
+						th:value="${professor.id}"
+						th:text="${professor.nome}">
+				</option>
+			</select> <br />
+			
+			Categoria:
+			<select name="categoria_id">
+				<option value="">Selecione uma categoria</option>
+				<option th:each="cat : ${categorias}"
+						th:value="${cat.id}"
+						th:text="${cat.nome}">
+				</option>
+			</select> <br />
+
+			Imagem: <input type="file" name="file" /> <br />
+			
+			<button type="submit">Enviar</button>	
+		</form>
+	</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xlms:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<th:block th:include="professor/msg"></th:block>
+
+<form method="post">
+	Busca: <input type="text" name="busca" />
+	<button type="submit">Enviar</button>
+</form>
+	<table border="1">
+		<thead>
+			<th>ID</th>
+			<th>Nome</th>
+			<th>Email</th>
+			<th>Imagem</th>
+			<th>Ações</th>
+		</thead>
+		<tbody>
+			<tr th:each="professor: ${professores}">
+				<td th:text="${professor.id}"></td>
+				<td th:text="${professor.nome}"></td>
+				<td th:text="${professor.email}"></td>
+				<td>
+					<img th:src="@{'/img/' + ${professor.imagem}}" width="200"/>
+				</td>
+				
+				<td><a th:href="@{/professor/editar/{id}(id=${professor.id})}">Editar</a></td>
+				<td><a th:href="@{/professor/excluir/{id}(id=${professor.id})}">Excluir</a></td>
+			</tr>
+			
+		</tbody>
+	</table>
+			
+</body>
+</html>

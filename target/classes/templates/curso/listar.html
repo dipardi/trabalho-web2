@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xlms:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <th:block th:include="curso/msg"></th:block>
+
+    <form method="post" th:action="@{/curso/listar}">
+        Busca: <input type="text" name="busca" />
+        <button type="submit">Enviar</button>
+    </form>
+    
+    <table border="1">
+        <thead>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Data Início</th>
+            <th>Data Final</th>
+            <th>Professor</th>
+            <th>Categoria</th>
+            <th>Imagem</th>
+            <th>Ações</th> 
+        </thead>
+        <tbody>
+            <tr th:each="curso: ${cursos}">
+                <td th:text="${curso.id}"></td>
+                <td th:text="${curso.nome}"></td>
+                <td th:text="${curso.descricao}"></td>
+                <td th:text="${#temporals.format(curso.dataInicio, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(curso.dataFinal, 'dd/MM/yyyy')}"></td>
+                <td th:text="${curso.professor?.nome}"></td>
+                <td th:text="${curso.categoria?.nome}"></td>
+                <td>
+                    <img th:if="${curso.imagem}" th:src="@{/curso/imagem/{imagemName}(imagemName=${curso.imagem})}" width="150"/>
+                </td>
+                <td>
+                    <a th:href="@{/curso/editar/{id}(id=${curso.id})}">Editar</a>
+                    <a th:href="@{/curso/excluir/{id}(id=${curso.id})}">Excluir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/curso/inserir">Adicionar Novo Curso</a>
+</body>
+</html>
